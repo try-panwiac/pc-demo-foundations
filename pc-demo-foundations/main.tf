@@ -98,7 +98,7 @@ resource "aws_instance" "internal" {
 
 resource "aws_security_group" "bastion_sg" {
   name_prefix = "bastion_sg-"
-  vpc_id      = var.vpc.demo_foundations_vpc.name
+  vpc_id     = aws_vpc.demo-foundations-vpc.id
 
   ingress {
     from_port = 22
@@ -145,7 +145,7 @@ resource "aws_security_group" "bastion_sg" {
 
 resource "aws_security_group" "vulnerable_sg" {
   name_prefix = "vulnerable_sg-"
-  vpc_id      = var.vpc.demo_foundations_vpc.name
+  vpc_id     = aws_vpc.demo-foundations-vpc.id
 
   ingress {
     from_port = 80
@@ -164,7 +164,7 @@ resource "aws_security_group" "vulnerable_sg" {
 
 resource "aws_security_group" "internal_sg" {
   name_prefix = "internal_sg-"
-  vpc_id      = var.vpc.demo_foundations_vpc.name
+  vpc_id     = aws_vpc.demo-foundations-vpc.id
 
   ingress {
     from_port = 22
@@ -207,8 +207,8 @@ resource "aws_db_instance" "internal_db" {
   instance_class       = "db.t2.micro"
   allocated_storage    = 20
   storage_type         = "gp2"
-  identifier           = "demo-db"
-  name                 = "internal-db"
+  identifier           = "demodb"
+  name                 = "internaldb"
   username             = "admin"
   password             = "password"
   parameter_group_name = "default.mysql5.7"
@@ -217,7 +217,7 @@ resource "aws_db_instance" "internal_db" {
   vpc_security_group_ids = [aws_security_group.db.id]
 
   tags = {
-    Name = "example-db"
+    Name = "exampledb"
   }
 }
 
