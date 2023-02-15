@@ -3,7 +3,7 @@
 
 variable "region" {
   type    = string
-  default = "us-east-1"
+  default = "us-east-2"
 }
 
 variable "vpc" {
@@ -46,37 +46,35 @@ variable "internal_subnet" {
 
 variable "vulnerable_ami" {
   type    = string
-  image = "ami-0c94855ba95c71c99" # Amazon Linux 2 LTS
+  default = "ami-0c94855ba95c71c99" # Amazon Linux 2 LTS
 }
 
 variable "vulnerable_instance_type" {
   type    = string
-  instance_type = "t2.micro"
+  default = "t2.micro"
 }
 
 variable "bastion_ami" {
   type    = string
-  image = "ami-05f7491af5eef733a" # Amazon Linux 2 LTS
-  instance_type = "t2.micro"
+  default = "ami-05f7491af5eef733a" # Amazon Linux 2 LTS
 }
 
 variable "bastion_instance_type" {
   type    = string
-  instance_type = "t2.micro"
+  default = "t2.micro"
 }
 
 variable "internal_ami" {
   type    = string
-  image = "ami-0c94855ba95c71c99" # Amazon Linux 2 LTS
-  instance_type = "t2.micro"
+  default = "ami-0c94855ba95c71c99" # Amazon Linux 2 LTS
 }
 
 variable "internal_instance_type" {
   type    = string
-  instance_type = "t2.micro"
+  default = "t2.micro"
 }
 
 variable "ssh_key" {
 type    = string
-path = "/path to your ssh key"
+default = "/path to your ssh key"
 }
