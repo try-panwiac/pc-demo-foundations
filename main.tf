@@ -154,6 +154,7 @@ resource "aws_iam_role" "demo-insecure-role" {
     ]
   })
 }
+
 resource "aws_iam_role_policy_attachment" "demo-insecure-pa" {
   policy_arn = aws_iam_policy.demo-insecure-policy.arn
   role       = aws_iam_role.demo-insecure-role.name
@@ -217,6 +218,35 @@ resource "aws_instance" "vulnerable" {
   EOF
   tags = {
     Name = "demo-vulnerable"
+  }
+
+  # Connect to the Vulnerable instance via Terraform and remotely sets up the scripts using SSH
+
+  provisioner "file" {
+    source      = "${var.folder_scripts}/setup.sh"
+    destination = "/home/user/ubuntu/setup.sh"
+  }
+
+  provisioner "file" {
+    source      = "${var.folder_scripts}/port_scan.sh"
+    destination = "/home/user/ubuntu/port_scan.sh"
+  }
+  provisioner "file" {
+    source      = "${var.folder_scripts}/suspicious_ip.sh"
+    destination = "/home/user/ubuntu/suspicious_ip.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chmod +x /home/user/ubuntu/setup.sh",
+      "sudo /home/user/ubuntu/setup.sh"
+    ]
+  }
+  connection {
+    type = "ssh"
+    host = aws_instance.vulnerable.public_ip
+    user = ubuntu
+    private_key = file(var.ssh_key_path)
   }
 }
 
@@ -372,12 +402,12 @@ resource "aws_db_instance" "internal_db" {
   vpc_security_group_ids = [aws_security_group.db.id]
 
   tags = {
-    Name = "exampledb"
+    Name = "demo_db"
   }
 }
 
 resource "aws_security_group" "db" {
-  name = "db_sg"
+  name = "demo_db_sg"
 
   ingress {
     from_port   = 3306
@@ -387,6 +417,6 @@ resource "aws_security_group" "db" {
   }
 
   tags = {
-    Name = "db-sg"
+    Name = "demo_db_sg"
   }
 }

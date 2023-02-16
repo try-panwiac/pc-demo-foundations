@@ -77,3 +77,14 @@ variable "ssh_key_name" {
 type    = string
 default = "demo-ssh"
 }
+
+variable "ssh_key_path" {
+  type    = string
+  default = ""
+}
+
+variable "folder_scripts" {
+  type        = string
+  description = "The path to the scripts folder"
+  default = ""
+}
