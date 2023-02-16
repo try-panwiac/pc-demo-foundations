@@ -7,7 +7,7 @@ sudo apt-get update
 sudo apt-get install -y openjdk-11-jdk
 
 # Clone the vulnerable app repository
-git clone https://github.com/tothi/log4shell-vulnerable-app.git
+git clone https://github.com/alexandre-cezar/log4shell-vulnerable-app.git
 
 # Install Maven
 sudo apt-get install -y maven

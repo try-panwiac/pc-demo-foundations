@@ -45,12 +45,12 @@ variable "internal_subnet" {
 
 variable "vulnerable_ami" {
   type    = string
-  default = "ami-03a5def6b0190cef7" # Amazon Linux 2 LTS
+  default = "ami-03a5def6b0190cef7" # Ubuntu 18.04 LTS
 }
 
 variable "vulnerable_instance_type" {
   type    = string
-  default = "t2.micro"
+  default = "t2.small"
 }
 
 variable "bastion_ami" {
