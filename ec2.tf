@@ -67,15 +67,6 @@ resource "aws_instance" "vulnerable" {
   vpc_security_group_ids = [aws_security_group.vulnerable_sg.id]
   iam_instance_profile = aws_iam_instance_profile.demo-insecure-profile.name
   key_name      = var.ssh_key_name
-  user_data = <<-EOF
-    #!/bin/bash
-    sudo apt-get update
-    sudo apt-get install -y openjdk-11-jdk
-    git clone https://github.com/alexandre-cezar/log4shell-vulnerable-app.git
-    sudo apt-get install -y maven
-    cd log4shell-vulnerable-app
-    ./gradlew appRun &
-  EOF
   tags = {
     Name = "demo-vulnerable"
   }
