@@ -34,11 +34,6 @@ resource "aws_subnet" "private-subnet" {
   }
 }
 
-resource "tls_private_key" "demo-key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
 resource "aws_internet_gateway" "demo-foundations-igw" {
   vpc_id = aws_vpc.demo-foundations-vpc.id
   tags = {
@@ -92,6 +87,56 @@ resource "aws_route_table_association" "private_association" {
 resource "aws_route_table_association" "public_association" {
   subnet_id      = aws_subnet.public-subnet.id
   route_table_id = aws_route_table.demo-public.id
+}
+
+resource "aws_cloudwatch_log_group" "demo_flow_log_group" {
+  name = "demo_flow-log-group"
+}
+
+resource "aws_flow_log" "demo_flow_log" {
+  iam_role_arn = aws_iam_role.demo_flow_log_role.arn
+  log_destination = aws_cloudwatch_log_group.demo_flow_log_group.arn
+  traffic_type = "ALL"
+  vpc_id = aws_vpc.demo-foundations-vpc.id
+}
+
+resource "aws_iam_role" "demo_flow_log_role" {
+  name = "demo_flow_log_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "vpc-flow-logs.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "demo_flow_log_policy" {
+  name = "demo_flow_log_policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = aws_cloudwatch_log_group.demo_flow_log_group.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "flow_log_role_policy" {
+  policy_arn = aws_iam_policy.demo_flow_log_policy.arn
+  role = aws_iam_role.demo_flow_log_role.name
 }
 
 resource "aws_iam_role" "demo-insecure-role" {
@@ -161,6 +206,15 @@ resource "aws_instance" "vulnerable" {
   vpc_security_group_ids = [aws_security_group.vulnerable_sg.id]
   iam_instance_profile = aws_iam_instance_profile.demo-insecure-profile.name
   key_name      = var.ssh_key_name
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo apt-get update
+    sudo apt-get install -y openjdk-11-jdk
+    git clone https://github.com/alexandre-cezar/log4shell-vulnerable-app.git
+    sudo apt-get install -y maven
+    cd log4shell-vulnerable-app
+    ./gradlew appRun &
+  EOF
   tags = {
     Name = "demo-vulnerable"
   }
