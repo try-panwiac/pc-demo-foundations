@@ -245,7 +245,7 @@ resource "aws_instance" "vulnerable" {
   connection {
     type = "ssh"
     host = aws_instance.vulnerable.public_ip
-    user = ubuntu
+    user = "ubuntu"
     private_key = file(var.ssh_key_path)
   }
 }
