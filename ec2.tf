@@ -1,0 +1,223 @@
+resource "aws_iam_role" "demo-insecure-role" {
+  name = "demo_insecure-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "demo-insecure-pa" {
+  policy_arn = aws_iam_policy.demo-insecure-policy.arn
+  role       = aws_iam_role.demo-insecure-role.name
+}
+
+resource "aws_iam_instance_profile" "demo-insecure-profile" {
+  name = "demo-insecure-profile"
+  role = aws_iam_role.demo-insecure-role.name
+}
+
+resource "aws_iam_policy" "demo-insecure-policy" {
+  name        = "demo-insecure-policy"
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:GetObject",
+          "iam:PassRole",
+          "ec2:RunInstances",
+          "lambda:InvokeFunction"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_instance" "bastion" {
+  ami           = var.bastion_ami
+  instance_type = var.bastion_instance_type
+  subnet_id     = aws_subnet.public-subnet.id
+  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+  key_name      = var.ssh_key_name
+  tags = {
+    Name = "demo-bastion"
+  }
+  depends_on = [aws_vpc.demo-foundations-vpc]
+}
+
+resource "aws_eip" "bastion" {
+  instance = aws_instance.bastion.id
+  vpc      = true
+}
+
+resource "aws_instance" "vulnerable" {
+  ami           = var.vulnerable_ami
+  instance_type = var.vulnerable_instance_type
+  subnet_id     = aws_subnet.public-subnet.id
+  vpc_security_group_ids = [aws_security_group.vulnerable_sg.id]
+  iam_instance_profile = aws_iam_instance_profile.demo-insecure-profile.name
+  key_name      = var.ssh_key_name
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo apt-get update
+    sudo apt-get install -y openjdk-11-jdk
+    git clone https://github.com/alexandre-cezar/log4shell-vulnerable-app.git
+    sudo apt-get install -y maven
+    cd log4shell-vulnerable-app
+    ./gradlew appRun &
+  EOF
+  tags = {
+    Name = "demo-vulnerable"
+  }
+
+  depends_on = [aws_vpc.demo-foundations-vpc]
+}
+
+resource "aws_eip" "vulnerable" {
+  instance = aws_instance.vulnerable.id
+  vpc      = true
+}
+
+resource "aws_instance" "internal" {
+  ami           = var.internal_ami
+  instance_type = var.internal_instance_type
+  subnet_id     = aws_subnet.private-subnet.id
+  vpc_security_group_ids = [aws_security_group.internal_sg.id]
+  key_name      = var.ssh_key_name
+  tags = {
+    Name = "demo-internal"
+  }
+  depends_on = [aws_vpc.demo-foundations-vpc]
+}
+
+resource "aws_security_group" "bastion_sg" {
+  name = "bastion_sg"
+  vpc_id     = aws_vpc.demo-foundations-vpc.id
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port   = 65535
+    protocol  = "tcp"
+    cidr_blocks = [aws_subnet.public-subnet.cidr_block, aws_subnet.private-subnet.cidr_block]
+  }
+
+  egress {
+    from_port = 0
+    to_port   = 65535
+    protocol  = "udp"
+    cidr_blocks = [aws_subnet.public-subnet.cidr_block, aws_subnet.private-subnet.cidr_block]
+  }
+  tags = {
+    Name = "demo-bastion-sg"
+  }
+}
+
+resource "aws_security_group" "vulnerable_sg" {
+  name = "vulnerable_sg"
+  vpc_id     = aws_vpc.demo-foundations-vpc.id
+
+  ingress {
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 3306
+    to_port   = 3306
+    protocol  = "tcp"
+    cidr_blocks = [aws_subnet.private-subnet.cidr_block]
+  }
+  tags = {
+    Name = "demo-vulnerable-sg"
+  }
+}
+
+resource "aws_security_group" "internal_sg" {
+  name = "internal_sg"
+  vpc_id     = aws_vpc.demo-foundations-vpc.id
+
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+    cidr_blocks = [aws_subnet.public-subnet.cidr_block]
+  }
+
+  egress {
+    from_port = 80
+    to_port   = 80
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 0
+    to_port   = 65535
+    protocol  = "tcp"
+    cidr_blocks = [aws_subnet.private-subnet.cidr_block]
+  }
+
+  egress {
+    from_port = 0
+    to_port   = 65535
+    protocol  = "udp"
+    cidr_blocks = [aws_subnet.private-subnet.cidr_block]
+  }
+  tags = {
+    Name = "demo-internal-sg"
+  }
+}
