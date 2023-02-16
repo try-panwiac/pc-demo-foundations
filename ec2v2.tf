@@ -52,17 +52,12 @@ resource "aws_instance" "bastion" {
   instance_type = var.bastion_instance_type
   subnet_id     = aws_subnet.public-subnet.id
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+  associate_public_ip_address = true
   key_name      = var.ssh_key_name
   tags = {
     Name = "demo-bastion"
   }
   depends_on = [aws_vpc.demo-foundations-vpc]
-}
-
-# Creates and Associates the Elastic IP to the Bastion Host
-resource "aws_eip" "bastion" {
-  instance = aws_instance.bastion.id
-  vpc      = true
 }
 
 # Creates the vulnerable instance that will trigger the Hyperion policies
@@ -71,6 +66,7 @@ resource "aws_instance" "vulnerable" {
   instance_type = var.vulnerable_instance_type
   subnet_id     = aws_subnet.public-subnet.id
   vpc_security_group_ids = [aws_security_group.vulnerable_sg.id]
+  associate_public_ip_address = true
   iam_instance_profile = aws_iam_instance_profile.demo-insecure-profile.name
   key_name      = var.ssh_key_name
   tags = {
@@ -78,11 +74,65 @@ resource "aws_instance" "vulnerable" {
   }
 
   depends_on = [aws_vpc.demo-foundations-vpc]
-}
 
-resource "aws_eip" "vulnerable" {
-  instance = aws_instance.vulnerable.id
-  vpc      = true
+  # Connect to the Vulnerable instance via Terraform and remotely sets up the scripts using SSH
+
+  provisioner "file" {
+    source      = "${var.folder_scripts}/setup.sh"
+    destination = "/home/user/ubuntu/setup.sh"
+    connection {
+      type = "ssh"
+      host = aws_instance.vulnerable.public_ip
+      user = "ubuntu"
+      private_key = file(var.ssh_key_path)
+    }
+  }
+
+  provisioner "file" {
+    source      = "${var.folder_scripts}/port_scan.sh"
+    destination = "/home/user/ubuntu/port_scan.sh"
+  connection {
+    type        = "ssh"
+    host        = aws_instance.vulnerable.public_ip
+    user        = "ubuntu"
+    private_key = file(var.ssh_key_path)
+    }
+  }
+
+  provisioner "file" {
+    source      = "${var.folder_scripts}/suspicious_ip.sh"
+    destination = "/home/user/ubuntu/suspicious_ip.sh"
+  connection {
+    type        = "ssh"
+    host        = aws_instance.vulnerable.public_ip
+    user        = "ubuntu"
+    private_key = file(var.ssh_key_path)
+    }
+  }
+
+  provisioner "file" {
+    source      = "${var.folder_scripts}/log4j.sh"
+    destination = "/home/user/ubuntu/log4j.sh"
+    connection {
+      type        = "ssh"
+      host        = aws_instance.vulnerable.public_ip
+      user        = "ubuntu"
+      private_key = file(var.ssh_key_path)
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chmod +x /home/user/ubuntu/setup.sh",
+      "sudo /home/user/ubuntu/setup.sh"
+    ]
+    connection {
+      type = "ssh"
+      host = aws_instance.vulnerable.public_ip
+      user = "ubuntu"
+      private_key = file(var.ssh_key_path)
+    }
+  }
 }
 
 resource "aws_instance" "internal" {
