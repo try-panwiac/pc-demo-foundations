@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Set the paths to the scripts
-file1_path="/home/user/ubuntu/prepare.sh"
-file2_path="/home/user/ubuntu/port-scan.sh"
-file3_path="/home/user/ubuntu/suspicious_ip.sh"
-file4_path="/home/user/ubuntu/log4j.sh"
+file1_path="/home/ubuntu/prepare.sh"
+file2_path="/home/ubuntu/port-scan.sh"
+file3_path="/home/ubuntu/suspicious_ip.sh"
+file4_path="/home/ubuntu/log4j.sh"
 
 # Makes the scripts executable
 chmod +x "$file1_path"

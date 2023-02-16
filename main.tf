@@ -1,3 +1,4 @@
+# Defines the required providers
 terraform {
   required_providers {
     aws = {
@@ -7,6 +8,7 @@ terraform {
   }
 }
 
+# Defines the region where the deployment is going to take place
 provider "aws" {
   region = var.region
 }

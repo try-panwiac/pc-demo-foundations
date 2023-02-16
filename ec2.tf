@@ -1,3 +1,4 @@
+# Creates the role that will be attached to the insecure instance
 resource "aws_iam_role" "demo-insecure-role" {
   name = "demo_insecure-role"
   assume_role_policy = jsonencode({
@@ -14,16 +15,18 @@ resource "aws_iam_role" "demo-insecure-role" {
   })
 }
 
+# Attaches the policy to the insecure role
 resource "aws_iam_role_policy_attachment" "demo-insecure-pa" {
   policy_arn = aws_iam_policy.demo-insecure-policy.arn
   role       = aws_iam_role.demo-insecure-role.name
 }
 
+# Creates the instance profile
 resource "aws_iam_instance_profile" "demo-insecure-profile" {
   name = "demo-insecure-profile"
   role = aws_iam_role.demo-insecure-role.name
 }
-
+# Creates the IAM policy
 resource "aws_iam_policy" "demo-insecure-policy" {
   name        = "demo-insecure-policy"
   policy      = jsonencode({
@@ -43,6 +46,7 @@ resource "aws_iam_policy" "demo-insecure-policy" {
   })
 }
 
+# Creates the Bastion Host for access to the environment
 resource "aws_instance" "bastion" {
   ami           = var.bastion_ami
   instance_type = var.bastion_instance_type
@@ -55,11 +59,13 @@ resource "aws_instance" "bastion" {
   depends_on = [aws_vpc.demo-foundations-vpc]
 }
 
+# Creates and Associates the Elastic IP to the Bastion Host
 resource "aws_eip" "bastion" {
   instance = aws_instance.bastion.id
   vpc      = true
 }
 
+# Creates the vulnerable instance that will trigger the Hyperion policies
 resource "aws_instance" "vulnerable" {
   ami           = var.vulnerable_ami
   instance_type = var.vulnerable_instance_type
