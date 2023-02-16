@@ -7,7 +7,6 @@ variable "region" {
 }
 
 variable "vpc" {
-  description = "The VPC object with name, description, and CIDR block"
   type = map(object({
     name        = string
     description = string
@@ -46,7 +45,7 @@ variable "internal_subnet" {
 
 variable "vulnerable_ami" {
   type    = string
-  default = "ami-0c94855ba95c71c99" # Amazon Linux 2 LTS
+  default = "ami-03a5def6b0190cef7" # Amazon Linux 2 LTS
 }
 
 variable "vulnerable_instance_type" {
@@ -56,7 +55,7 @@ variable "vulnerable_instance_type" {
 
 variable "bastion_ami" {
   type    = string
-  default = "ami-05f7491af5eef733a" # Amazon Linux 2 LTS
+  default = "ami-0cc87e5027adcdca8" # Amazon Linux 2 LTS
 }
 
 variable "bastion_instance_type" {
@@ -66,7 +65,7 @@ variable "bastion_instance_type" {
 
 variable "internal_ami" {
   type    = string
-  default = "ami-0c94855ba95c71c99" # Amazon Linux 2 LTS
+  default = "ami-0cc87e5027adcdca8" # Amazon Linux 2 LTS
 }
 
 variable "internal_instance_type" {
@@ -74,7 +73,7 @@ variable "internal_instance_type" {
   default = "t2.micro"
 }
 
-variable "ssh_key" {
+variable "ssh_key_name" {
 type    = string
-default = "/path to your ssh key"
+default = "demo-ssh"
 }
