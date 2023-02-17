@@ -79,7 +79,7 @@ resource "aws_instance" "vulnerable" {
 
   provisioner "file" {
     source      = "${var.folder_scripts}/setup.sh"
-    destination = "/home/user/ubuntu/setup.sh"
+    destination = "/home/ubuntu/setup.sh"
     connection {
       type = "ssh"
       host = aws_instance.vulnerable.public_ip
@@ -90,7 +90,7 @@ resource "aws_instance" "vulnerable" {
 
   provisioner "file" {
     source      = "${var.folder_scripts}/port_scan.sh"
-    destination = "/home/user/ubuntu/port_scan.sh"
+    destination = "/home/ubuntu/port_scan.sh"
   connection {
     type        = "ssh"
     host        = aws_instance.vulnerable.public_ip
@@ -101,7 +101,7 @@ resource "aws_instance" "vulnerable" {
 
   provisioner "file" {
     source      = "${var.folder_scripts}/suspicious_ip.sh"
-    destination = "/home/user/ubuntu/suspicious_ip.sh"
+    destination = "/home/ubuntu/suspicious_ip.sh"
   connection {
     type        = "ssh"
     host        = aws_instance.vulnerable.public_ip
@@ -112,7 +112,7 @@ resource "aws_instance" "vulnerable" {
 
   provisioner "file" {
     source      = "${var.folder_scripts}/log4j.sh"
-    destination = "/home/user/ubuntu/log4j.sh"
+    destination = "/home/ubuntu/log4j.sh"
     connection {
       type        = "ssh"
       host        = aws_instance.vulnerable.public_ip
@@ -123,8 +123,8 @@ resource "aws_instance" "vulnerable" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo chmod +x /home/user/ubuntu/setup.sh",
-      "sudo /home/user/ubuntu/setup.sh"
+      "sudo chmod +x /home/ubuntu/setup.sh",
+      "sudo /home/ubuntu/setup.sh"
     ]
     connection {
       type = "ssh"
@@ -203,8 +203,8 @@ resource "aws_security_group" "vulnerable_sg" {
   vpc_id     = aws_vpc.demo-foundations-vpc.id
 
   ingress {
-    from_port = 80
-    to_port   = 80
+    from_port = 22
+    to_port   = 22
     protocol  = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
