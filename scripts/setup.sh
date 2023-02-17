@@ -2,7 +2,7 @@
 
 # Set the paths to the scripts
 file1_path="/home/ubuntu/prepare.sh"
-file2_path="/home/ubuntu/port-scan.sh"
+file2_path="/home/ubuntu/port_scan.sh"
 file3_path="/home/ubuntu/suspicious_ip.sh"
 file4_path="/home/ubuntu/log4j.sh"
 

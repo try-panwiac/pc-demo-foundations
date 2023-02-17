@@ -89,6 +89,17 @@ resource "aws_instance" "vulnerable" {
   }
 
   provisioner "file" {
+    source      = "${var.folder_scripts}/prepare.sh"
+    destination = "/home/ubuntu/prepare.sh"
+    connection {
+      type        = "ssh"
+      host        = aws_instance.vulnerable.public_ip
+      user        = "ubuntu"
+      private_key = file(var.ssh_key_path)
+    }
+  }
+
+  provisioner "file" {
     source      = "${var.folder_scripts}/port_scan.sh"
     destination = "/home/ubuntu/port_scan.sh"
   connection {
