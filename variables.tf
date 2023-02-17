@@ -45,7 +45,7 @@ variable "internal_subnet" {
 
 variable "vulnerable_ami" {
   type    = string
-  default = "ami-03a5def6b0190cef7" # Ubuntu 18.04 LTS
+  default = "ami-0263e4deb427da90e" # Ubuntu 18.04 LTS in us-east-1
 }
 
 variable "vulnerable_instance_type" {
@@ -55,7 +55,7 @@ variable "vulnerable_instance_type" {
 
 variable "bastion_ami" {
   type    = string
-  default = "ami-0cc87e5027adcdca8" # Amazon Linux 2 LTS
+  default = "ami-0dfcb1ef8550277af" # Amazon Linux 2 LTS in us-east-1
 }
 
 variable "bastion_instance_type" {
@@ -65,7 +65,7 @@ variable "bastion_instance_type" {
 
 variable "internal_ami" {
   type    = string
-  default = "ami-0cc87e5027adcdca8" # Amazon Linux 2 LTS
+  default = "ami-0dfcb1ef8550277af" # Amazon Linux 2 LTS in us-east-1
 }
 
 variable "internal_instance_type" {
