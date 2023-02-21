@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Build the vulnerable app
+# Builds the vulnerable app
 cd log4shell-vulnerable-app
 sudo ./gradlew appRun
 

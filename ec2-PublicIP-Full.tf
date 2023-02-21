@@ -76,7 +76,6 @@ resource "aws_instance" "vulnerable" {
   depends_on = [aws_vpc.demo-foundations-vpc]
 
   # Connect to the Vulnerable instance via Terraform and remotely sets up the scripts using SSH
-
   provisioner "file" {
     source      = "${var.folder_scripts}/setup.sh"
     destination = "/home/ubuntu/setup.sh"
@@ -146,6 +145,7 @@ resource "aws_instance" "vulnerable" {
   }
 }
 
+# Creates the internal instance that will trigger the anomaly policies
 resource "aws_instance" "internal" {
   ami           = var.internal_ami
   instance_type = var.internal_instance_type
@@ -166,6 +166,7 @@ resource "aws_instance" "internal" {
   depends_on = [aws_vpc.demo-foundations-vpc]
 }
 
+# Creates the Bastion SG
 resource "aws_security_group" "bastion_sg" {
   name = "bastion_sg"
   vpc_id     = aws_vpc.demo-foundations-vpc.id
@@ -174,7 +175,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port = 22
     to_port   = 22
     protocol  = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] # Update this value before applying to match your own IP
   }
 
   egress {
@@ -209,6 +210,7 @@ resource "aws_security_group" "bastion_sg" {
   }
 }
 
+# Creates the Vulnerable SG
 resource "aws_security_group" "vulnerable_sg" {
   name = "vulnerable_sg"
   vpc_id     = aws_vpc.demo-foundations-vpc.id
@@ -217,7 +219,7 @@ resource "aws_security_group" "vulnerable_sg" {
     from_port = 22
     to_port   = 22
     protocol  = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] # Update this value before applying to match your own IP
   }
 
   ingress {
@@ -259,6 +261,7 @@ resource "aws_security_group" "vulnerable_sg" {
   }
 }
 
+# Creates the Internal SG
 resource "aws_security_group" "internal_sg" {
   name = "internal_sg"
   vpc_id     = aws_vpc.demo-foundations-vpc.id
