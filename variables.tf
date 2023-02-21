@@ -83,8 +83,19 @@ variable "ssh_key_path" {
   default = ""
 }
 
+variable "s3_bucket_name" {
+  description = "Name of the S3 bucket to create"
+  default = "pcdemo-cg-cardholder-data-bucket-xyz"
+}
+
 variable "folder_scripts" {
   type        = string
   description = "The path to the scripts folder"
+  default = ""
+}
+
+variable "folder_assets" {
+  type        = string
+  description = "The path to the S3 bucket files folder"
   default = ""
 }
