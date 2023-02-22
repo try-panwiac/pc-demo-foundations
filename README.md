@@ -17,3 +17,5 @@ There's also a need to fill the variables.tf and main.tf filse with the proper v
 Aftter that, just initialize the terraform using terraform init and run it using terraform apply.
 
 (every line in the code is documented, so if any questions arise, take a look at the code)
+
+Final note: The scripts need some customization based on the VPC configuration and the suspicious IP address
