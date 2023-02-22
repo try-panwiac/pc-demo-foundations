@@ -8,7 +8,7 @@ There's also two EC2 files (one of them creates the EC2 using Elastic IPs, but t
 
 Choose the version that fits your environment better, but if you're using the EIP one, make sure you copy the scripts over to the the demo-vulnerable host some other way in an automated fashion and that the setup.sh script is executed (it takes care of everything else). 
 
-NOTE:do not run both EC2 files at the same time.
+NOTE:Do not run both EC2 files at the same time.
 
 You will also need to set up the SSH key beforehand (creating one using terraform is possible but creates several other concerns, so just create one in AWS and copy the key to this project folder.
 
