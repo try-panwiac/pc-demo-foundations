@@ -15,18 +15,48 @@ resource "aws_iam_role" "demo-insecure-role" {
   })
 }
 
-# Attaches the policy to the insecure role
+# Creates the role that will be attached to the overpermissive instance
+resource "aws_iam_role" "demo-overpermissive-role" {
+  name = "demo_overpermissive-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# Attaches the insecure policy to the insecure role
 resource "aws_iam_role_policy_attachment" "demo-insecure-pa" {
   policy_arn = aws_iam_policy.demo-insecure-policy.arn
   role       = aws_iam_role.demo-insecure-role.name
 }
 
-# Creates the instance profile
+# Attaches the overpermissive policy to the overpermissive role
+resource "aws_iam_role_policy_attachment" "demo-overpermissive-pa" {
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  role       = aws_iam_role.demo-overpermissive-role
+}
+
+# Creates the insecure instance profile
 resource "aws_iam_instance_profile" "demo-insecure-profile" {
   name = "demo-insecure-profile"
   role = aws_iam_role.demo-insecure-role.name
 }
-# Creates the IAM policy
+
+# Creates the overpermissive instance profile
+resource "aws_iam_instance_profile" "demo-overpermissive-profile" {
+  name = "demo-overpermissive-profile"
+  role = aws_iam_role.demo-overpermissive-role.name
+}
+
+# Creates the insecure IAM policy
 resource "aws_iam_policy" "demo-insecure-policy" {
   name        = "demo-insecure-policy"
   policy      = jsonencode({
@@ -80,11 +110,13 @@ resource "aws_instance" "vulnerable" {
   depends_on = [aws_vpc.demo-foundations-vpc]
 }
 
+# Creates and Associates the Elastic IP to the Vulnerable Host
 resource "aws_eip" "vulnerable" {
   instance = aws_instance.vulnerable.id
   vpc      = true
 }
 
+# Creates the internal instance that will be target of the internal port scans
 resource "aws_instance" "internal" {
   ami           = var.internal_ami
   instance_type = var.internal_instance_type
@@ -101,6 +133,20 @@ resource "aws_instance" "internal" {
   EOF
   tags = {
     Name = "demo-internal"
+  }
+  depends_on = [aws_vpc.demo-foundations-vpc]
+}
+
+# Creates the overpermissive instance that will trigger the IAM overpermissive roles
+resource "aws_instance" "overpermissive" {
+  ami           = var.overpermissive_ami
+  instance_type = var.overpermissive_instance_type
+  subnet_id     = aws_subnet.private-subnet.id
+  vpc_security_group_ids = [aws_security_group.internal_sg.id]
+  iam_instance_profile = aws_iam_instance_profile.demo-overpermissive-profile
+  key_name      = var.ssh_key_name
+  tags = {
+    Name = "demo-overpermissive"
   }
   depends_on = [aws_vpc.demo-foundations-vpc]
 }

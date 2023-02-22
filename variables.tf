@@ -76,8 +76,20 @@ variable "internal_ami" {
   default = "ami-0dfcb1ef8550277af" # Amazon Linux 2 LTS in us-east-1
 }
 
-#Instance type that is going to be used by the insternal instance
+#Instance type that is going to be used by the internal instance
 variable "internal_instance_type" {
+  type    = string
+  default = "t2.micro"
+}
+
+#AMI ID that is going to be used by the over-permissive instance (region dependent)
+variable "overpermissive_ami" {
+  type    = string
+  default = "ami-0dfcb1ef8550277af" # Amazon Linux 2 LTS in us-east-1
+}
+
+#Instance type that is going to be used by the internal instance
+variable "overpermissive_instance_type" {
   type    = string
   default = "t2.micro"
 }
