@@ -118,10 +118,15 @@ variable "ssh_key_path" {
   default = ""
 }
 
-#Name of the S3 bucket that is going to be created
+#Name of the private S3 bucket that is going to be created
 variable "s3_bucket_name" {
-  description = "Name of the S3 bucket to create"
+  description = "Name of the private S3 bucket"
   default = "pcdemo-cg-cardholder-data-bucket-xyz"
+}
+#Name of the public S3 bucket that is going to be created
+variable "s3_public_bucket_name" {
+  description = "Name of the public S3 bucket"
+  default = "pcdemo-public-files"
 }
 
 #Path to the scripts folder (scripts that automate the configuration of the vulnerable instance)
