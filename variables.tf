@@ -46,6 +46,18 @@ variable "internal_subnet" {
   }
 }
 
+#Internal Subnet2 naming and CIDR configuration
+variable "internal2_subnet" {
+  type = object({
+    name = string
+    cidr_block = string
+  })
+  default = {
+    name = "internal2-subnet"
+    cidr_block = "172.20.3.0/24"
+  }
+}
+
 #AMI ID that is going to be used by the vulnerable instance (region dependent)
 variable "vulnerable_ami" {
   type    = string

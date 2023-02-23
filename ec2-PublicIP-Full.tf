@@ -202,7 +202,7 @@ resource "aws_instance" "overpermissive" {
   instance_type = var.overpermissive_instance_type
   subnet_id     = aws_subnet.private-subnet.id
   vpc_security_group_ids = [aws_security_group.internal_sg.id]
-  iam_instance_profile = aws_iam_instance_profile.demo-overpermissive-profile
+  iam_instance_profile = aws_iam_instance_profile.demo-overpermissive-profile.name
   key_name      = var.ssh_key_name
   tags = {
     Name = "demo-overpermissive"

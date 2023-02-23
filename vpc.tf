@@ -24,6 +24,15 @@ resource "aws_subnet" "private-subnet" {
   }
 }
 
+#Creates the 2nd private subnet using the variable internal2 subnet object definitions
+resource "aws_subnet" "private2-subnet" {
+  cidr_block = var.internal2_subnet.cidr_block
+  vpc_id     = aws_vpc.demo-foundations-vpc.id
+  tags = {
+    Name = "private2-subnet"
+  }
+}
+
 #Creates the Internet Gateway
 resource "aws_internet_gateway" "demo-foundations-igw" {
   vpc_id = aws_vpc.demo-foundations-vpc.id
@@ -79,6 +88,12 @@ resource "aws_route" "public_default_route" {
 #Associates the private route table with the private subnet
 resource "aws_route_table_association" "private_association" {
   subnet_id      = aws_subnet.private-subnet.id
+  route_table_id = aws_route_table.demo-private.id
+}
+
+#Associates the private route table with the private2 subnet
+resource "aws_route_table_association" "private2_association" {
+  subnet_id      = aws_subnet.private2-subnet.id
   route_table_id = aws_route_table.demo-private.id
 }
 

@@ -41,7 +41,7 @@ resource "aws_iam_role_policy_attachment" "demo-insecure-pa" {
 # Attaches the overpermissive policy to the overpermissive role
 resource "aws_iam_role_policy_attachment" "demo-overpermissive-pa" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-  role       = aws_iam_role.demo-overpermissive-role
+  role       = aws_iam_role.demo-overpermissive-role.name
 }
 
 # Creates the insecure instance profile
@@ -143,7 +143,7 @@ resource "aws_instance" "overpermissive" {
   instance_type = var.overpermissive_instance_type
   subnet_id     = aws_subnet.private-subnet.id
   vpc_security_group_ids = [aws_security_group.internal_sg.id]
-  iam_instance_profile = aws_iam_instance_profile.demo-overpermissive-profile
+  iam_instance_profile = aws_iam_instance_profile.demo-overpermissive-profile.name
   key_name      = var.ssh_key_name
   tags = {
     Name = "demo-overpermissive"

@@ -2,7 +2,7 @@
 
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "pc-demo-foundations-db-subnet-group"
-  subnet_ids = [aws_subnet.private-subnet.id]
+  subnet_ids = [aws_subnet.private-subnet.id, aws_subnet.private2-subnet.id]
   tags = {
     Name = "pc-demo-foundations-db-subnet-group"
   }
@@ -18,7 +18,7 @@ resource "aws_db_instance" "internal_db" {
   username             = "admin"
   password             = "my_password01"
   parameter_group_name = "default.mysql8.0"
-  db_subnet_group_name = aws_db_subnet_group.db_subnet_group
+  db_subnet_group_name = aws_db_subnet_group.db_subnet_group.name
   skip_final_snapshot = true
 
   vpc_security_group_ids = [aws_security_group.db.id]
@@ -31,6 +31,7 @@ resource "aws_db_instance" "internal_db" {
 #Creates the SG for the RDS database
 resource "aws_security_group" "db" {
   name = "demo_db_sg"
+  vpc_id     = aws_vpc.demo-foundations-vpc.id
 
   ingress {
     from_port   = 3306
