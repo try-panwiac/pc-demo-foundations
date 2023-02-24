@@ -2,7 +2,10 @@
 
 How to:
 
-Each terraform file creates a specific set of the infrastructure, so you can delete the parts that are not interesting to you. Per example, if you already have a VPC and flow logs configured or if you just don't need RDS, just delete the respective files. (If you delete the VPC, you will need to adjust the VPC reference in the remaining files to use whatever VPC you already has).
+Each terraform file creates a specific set of the infrastructure (VPC, EC2, S3, RDS, Flow Logs, etc), so you can delete whatever parts that are not interesting to you. 
+
+Per example, if you already have a VPC and flow logs configured or if you just don't need RDS, just delete the respective files. 
+NOTE: If you delete the VPC, keep in mind that additional adjustments are required in all the remaining files, because all the resources expect to be created in the VPC created by this tenant).
 
 There's also two EC2 files (one of them creates the EC2 using Elastic IPs, but this makes impossible to run the file and remote exec providers) and the other one uses Public IPs, which in turn, allows the use of the providers for full automation.
 
