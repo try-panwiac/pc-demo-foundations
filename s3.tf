@@ -1,3 +1,6 @@
+#Creates S3 buckets for CSPM and Data Security
+#owner: Alexandre Cezar
+
 #Creates a private S3 bucket using the variable set up in the vars.tf file
 resource "aws_s3_bucket" "pcdemo-cardholder-data-bucket" {
   bucket = var.s3_bucket_name
