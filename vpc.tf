@@ -1,4 +1,6 @@
-#Creates the VPC using the variable VPC object definitions
+#Creates the VPC and configures it using the variable VPC object definitions
+#owner: Alexandre Cezar
+
 resource "aws_vpc" "demo-foundations-vpc" {
   cidr_block = var.vpc.demo_foundations_vpc.cidr_block
   tags = {
