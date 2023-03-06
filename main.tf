@@ -1,3 +1,6 @@
+#Define the main attributes to be used by the deployment
+#owner: Alexandre Cezar
+
 #Sets the required providers and versions
 terraform {
   required_providers {
@@ -8,7 +11,7 @@ terraform {
   }
 }
 
-# Passes the region where all the region based resources are going to be created
+# Defines the region where all the region based resources are going to be created
 provider "aws" {
   region = var.region
 }
