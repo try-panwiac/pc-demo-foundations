@@ -1,3 +1,6 @@
+#Creates the EC2 instances, attach roles and (but do not run the scripts as EIPs are used)
+#owner: Alexandre Cezar
+
 # Creates the role that will be attached to the insecure instance
 resource "aws_iam_role" "demo-insecure-role" {
   name = "demo_insecure-role"
