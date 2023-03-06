@@ -1,4 +1,5 @@
-#Creates the Cloud Watch Log Group
+#Creates the Cloud Watch Log Group, enables Flow Logs, set ups roles and performs the proper associations
+#owner: Alexandre Cezar
 resource "aws_cloudwatch_log_group" "demo_flow_log_group" {
   name = "demo_flow-log-group"
 }
