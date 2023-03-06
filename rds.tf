@@ -1,3 +1,6 @@
+#Configures a RDS database in the private subnet
+#owner: Alexandre Cezar
+
 #Creates the subnet group where the RDS is going to be anchored
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "pc-demo-foundations-db-subnet-group"
