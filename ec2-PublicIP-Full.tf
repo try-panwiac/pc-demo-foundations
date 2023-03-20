@@ -1,3 +1,6 @@
+#Creates the EC2 instances, attach roles and run the scripts that will force trigger Attack Path policies and generates traffic for VPC flow logs
+#owner: Alexandre Cezar
+
 # Creates the role that will be attached to the insecure instance
 resource "aws_iam_role" "demo-insecure-role" {
   name = "demo_insecure-role"
