@@ -41,7 +41,7 @@ resource "aws_iam_role_policy_attachment" "demo-insecure-pa" {
 # Attaches the overpermissive policy to the overpermissive role
 resource "aws_iam_role_policy_attachment" "demo-overpermissive-pa" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-  role       = aws_iam_role.demo-overpermissive-role
+  role       = aws_iam_role.demo-overpermissive-role.name
 }
 
 # Creates the instance profile
