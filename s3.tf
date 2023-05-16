@@ -12,6 +12,18 @@ resource "aws_s3_bucket" "pcdemo-cardholder-data-bucket" {
   }
 }
 
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "pcdemo-cardholder-data-bucket" {
+  bucket = aws_s3_bucket.pcdemo-cardholder-data-bucket.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
+
 #Creates a public S3 bucket using the variable set up in the vars.tf file
 resource "aws_s3_bucket" "pcdemo-public_bucket" {
   bucket = var.s3_public_bucket_name
@@ -22,6 +34,18 @@ resource "aws_s3_bucket" "pcdemo-public_bucket" {
     Description = "S3 PublicBucket demo used for storing malware."
   }
 }
+
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "pcdemo-public_bucket" {
+  bucket = aws_s3_bucket.pcdemo-public_bucket.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
 
 #Defines the files that are going to be upload to the private S3 bucket (could be a variable as well, but as these are hardcoded for now, I saw no need)
 locals {
