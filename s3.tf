@@ -15,7 +15,7 @@ resource "aws_s3_bucket" "pcdemo-cardholder-data-bucket" {
 #Creates a public S3 bucket using the variable set up in the vars.tf file
 resource "aws_s3_bucket" "pcdemo-public_bucket" {
   bucket = var.s3_public_bucket_name
-  acl    = "public-read"
+  acl    = "private"
   force_destroy = true
   tags = {
     Name        = var.s3_public_bucket_name
